@@ -20,7 +20,7 @@ endfunction
 
 function! s:buffer_callback(id, key) abort
     if -1 != a:key
-        execute printf('edit %s', escape(getbufline(winbufnr(a:id), a:key)[0], ' '))
+        execute printf('buffer %s', escape(getbufline(winbufnr(a:id), a:key)[0], ' '))
     endif
 endfunction
 
