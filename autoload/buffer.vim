@@ -14,7 +14,12 @@ function! buffer#exec() abort
     elseif &modified
         call popup_notification('current buffer is modified', { 'title' : 'buffer', 'pos' : 'center', })
     else
-        let wnr = popup_menu(map(xs, { _,x -> x['name'] }), { 'title' : 'buffer', 'callback' : function('s:buffer_callback'), })
+        let wnr = popup_menu(map(xs, { _,x -> x['name'] }), {
+                \   'title' : 'buffer',
+                \   'maxwidth' : &columns * 2 / 3,
+                \   'maxheight' : &lines * 2 / 3,
+                \   'callback' : function('s:buffer_callback'),
+                \ })
     endif
 endfunction
 
