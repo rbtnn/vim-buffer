@@ -14,8 +14,10 @@ function! buffer#exec() abort
     elseif &modified
         call popup_notification('current buffer is modified', { 'title' : 'buffer', 'pos' : 'center', })
     else
-        let wnr = popup_menu(map(xs, { _,x -> x['name'] }), {
+        let max = max(map(deepcopy(xs), { _,x -> len(x['name']) }))
+        let winid = popup_menu(map(xs, { _,x -> printf('%3d "%s"%s line %d', x['bufnr'], x['name'], repeat(' ', max - len(x['name'])), x['lnum']) }), {
                 \   'title' : 'buffer',
+                \   'padding' : [1,3,1,3],
                 \   'maxwidth' : &columns * 2 / 3,
                 \   'maxheight' : &lines * 2 / 3,
                 \   'callback' : function('s:buffer_callback'),
@@ -25,7 +27,11 @@ endfunction
 
 function! s:buffer_callback(id, key) abort
     if -1 != a:key
-        execute printf('buffer %s', escape(getbufline(winbufnr(a:id), a:key)[0], ' '))
+        let line = get(getbufline(winbufnr(a:id), a:key), 0, '')
+        let m = matchlist(line, '^\s*\(\d\+\)\s\+"\([^"]*\)"\s\+line \(\d\+\)$')
+        if !empty(m)
+            execute printf('buffer %s', m[1])
+        endif
     endif
 endfunction
 
