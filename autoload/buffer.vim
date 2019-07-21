@@ -8,11 +8,23 @@ endif
 function! buffer#exec() abort
     let xs = filter(getbufinfo(), { _,x -> filereadable(x['name']) && x['listed'] && bufnr('%') != x['bufnr'] })
     if empty(xs)
-        call popup_notification('there are no other buffers', { 'title' : 'buffer', 'pos' : 'center', })
+        call popup_notification('there are no other buffers', {
+                \   'title' : 'buffer',
+                \   'pos' : 'center',
+                \   'padding' : [1,3,1,3],
+                \ })
     elseif getbufvar(bufnr('%'), '&buftype') == 'terminal'
-        call popup_notification('current buffer is terminal', { 'title' : 'buffer', 'pos' : 'center', })
+        call popup_notification('current buffer is terminal', {
+                \   'title' : 'buffer',
+                \   'pos' : 'center',
+                \   'padding' : [1,3,1,3],
+                \ })
     elseif &modified
-        call popup_notification('current buffer is modified', { 'title' : 'buffer', 'pos' : 'center', })
+        call popup_notification('current buffer is modified', {
+                \   'title' : 'buffer',
+                \   'pos' : 'center',
+                \   'padding' : [1,3,1,3],
+                \ })
     else
         let max = max(map(deepcopy(xs), { _,x -> len(x['name']) }))
         let winid = popup_menu(map(xs, { _,x -> printf('%3d "%s"%s line %d', x['bufnr'], x['name'], repeat(' ', max - len(x['name'])), x['lnum']) }), {
