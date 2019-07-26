@@ -8,23 +8,26 @@ endif
 function! buffer#exec() abort
     let xs = filter(getbufinfo(), { _,x -> filereadable(x['name']) && x['listed'] && bufnr('%') != x['bufnr'] })
     if empty(xs)
-        call popup_notification('there are no other buffers', {
+        let winid = popup_notification('there are no other buffers', {
                 \   'title' : 'buffer',
                 \   'pos' : 'center',
                 \   'padding' : [1,3,1,3],
                 \ })
+        call s:set_wincolor(winid)
     elseif getbufvar(bufnr('%'), '&buftype') == 'terminal'
-        call popup_notification('current buffer is terminal', {
+        let winid = popup_notification('current buffer is terminal', {
                 \   'title' : 'buffer',
                 \   'pos' : 'center',
                 \   'padding' : [1,3,1,3],
                 \ })
+        call s:set_wincolor(winid)
     elseif &modified
-        call popup_notification('current buffer is modified', {
+        let winid = popup_notification('current buffer is modified', {
                 \   'title' : 'buffer',
                 \   'pos' : 'center',
                 \   'padding' : [1,3,1,3],
                 \ })
+        call s:set_wincolor(winid)
     else
         let max = max(map(deepcopy(xs), { _,x -> len(x['name']) }))
         let winid = popup_menu(map(xs, { _,x -> printf('%3d "%s"%s line %d', x['bufnr'], x['name'], repeat(' ', max - len(x['name'])), x['lnum']) }), {
@@ -34,6 +37,16 @@ function! buffer#exec() abort
                 \   'maxheight' : &lines * 2 / 3,
                 \   'callback' : function('s:buffer_callback'),
                 \ })
+        call s:set_wincolor(winid)
+    endif
+endfunction
+
+
+
+function! s:set_wincolor(winid) abort
+    let val = get(g:, 'buffer_popup_highlight', '')
+    if !empty(val)
+        call setwinvar(a:winid, '&wincolor', val)
     endif
 endfunction
 
