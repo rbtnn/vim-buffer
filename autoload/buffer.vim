@@ -29,8 +29,11 @@ function! buffer#exec() abort
                 \ })
         call s:set_wincolor(winid)
     else
-        let max = max(map(deepcopy(xs), { _,x -> len(x['name']) }))
-        let winid = popup_menu(map(xs, { _,x -> printf('%3d "%s"%s line %d', x['bufnr'], x['name'], repeat(' ', max - len(x['name'])), x['lnum']) }), {
+        for x in xs
+            let x['fname'] = fnamemodify(x['name'], ':t')
+        endfor
+        let max = max(map(deepcopy(xs), { _,x -> len(x['fname']) }))
+        let winid = popup_menu(map(xs, { _,x -> printf('%3d "%s"%s line %d', x['bufnr'], x['fname'], repeat(' ', max - len(x['fname'])), x['lnum']) }), {
                 \   'title' : 'buffer',
                 \   'padding' : [1,3,1,3],
                 \   'maxwidth' : &columns * 2 / 3,
